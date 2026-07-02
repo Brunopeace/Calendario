@@ -2,7 +2,7 @@
   "name": "Calendario",
   "short_name": "Calendario",
   "id": "/Calendario/",
-  "description": ""Um calendário pessoal elegante e responsivo do Sport Club do Recife para a Fabiana.",
+  "description": "Um calendário pessoal elegante e responsivo do Sport Club do Recife para a Fabiana.",
   "start_url": "/Calendario/index.html",
   "scope": "/Calendario/",
   "display": "standalone",
