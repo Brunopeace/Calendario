@@ -1,8 +1,11 @@
 {
-  "name": "Fideliza",
-  "short_name": "Fideliza",
-  "start_url": "./",
+  "name": "Calendário Rubro-negro Fabiana",
+  "short_name": "Calendário Sport",
+  "start_url": "index.html",
   "display": "standalone",
+  "background_color": "#121214",
+  "theme_color": "#d32f2f",
+  "description": "Um calendário pessoal elegante e responsivo do Sport Club do Recife para a Fabiana.",
   "icons": [
     {
       "src": "icons/icon-192.png",
