@@ -1,115 +1,355 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cliente</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2196f3">
-  <script type="module" src="js/scripts.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário Rubro-negro</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --bg-body: #121214;         /* Preto fosco de fundo */
+            --bg-calendar: #1a1a1e;     /* Container um pouco mais claro */
+            --text-main: #ffffff;       /* Texto principal branco */
+            --text-muted: #71717a;      /* Texto secundário */
+            --sport-red: #d32f2f;       /* Vermelho Sport */
+            --sport-gold: #e5b842;      /* Dourado do Leão */
+            --sport-gold-light: rgba(229, 184, 66, 0.15);
+            --border: #2d2d34;          /* Bordas discretas */
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --radius: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;    /* Garante o alinhamento vertical da saudação + calendário */
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Saudação do Usuário Personalizada */
+        .user-greeting {
+            text-align: center;
+            margin-bottom: 24px;
+            color: var(--text-main);
+        }
+
+        .greeting-prefix {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+
+        .user-name {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--sport-gold);    /* Destaca o nome no dourado oficial */
+            letter-spacing: -1px;
+            text-shadow: 0 4px 12px rgba(229, 184, 66, 0.15);
+        }
+
+        /* Container Principal */
+        .calendar-container {
+            background: var(--bg-calendar);
+            width: 100%;
+            max-width: 450px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Marca d'água do Escudo no Fundo */
+        .calendar-container::before {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 220px;
+            height: 220px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Sport_Club_do_Recife.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.04; /* Sutil para não atrapalhar a leitura dos dias */
+            pointer-events: none;
+        }
+
+        /* Cabeçalho do Calendário */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 32px 28px 20px 28px;
+        }
+
+        /* Alinhamento da Logo com o Mês */
+        .brand-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sport-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .current-date {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .calendar-navigation {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+        }
+
+        .nav-btn:hover {
+            background: var(--border);
+            border-color: var(--sport-gold);
+            color: var(--sport-gold);
+        }
+
+        /* Corpo do Calendário */
+        .calendar-body {
+            padding: 0 28px 28px 28px;
+        }
+
+        /* Dias da Semana */
+        .weeks {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--sport-gold); /* Dourado nos dias da semana */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        /* Grid de Dias */
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .days li {
+            list-style: none;
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+        }
+
+        .days li span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        /* Hover nos dias - Efeito Rubro-negro */
+        .days li:hover:not(.inactive) {
+            background: rgba(211, 47, 47, 0.15);
+            color: var(--sport-red);
+            font-weight: 600;
+        }
+
+        /* Dias inativos */
+        .days li.inactive {
+            color: var(--text-muted);
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        /* Dia Atual (Destaque de Campeão) */
+        .days li.active {
+            background: linear-gradient(135deg, var(--sport-red), #b71c1c);
+            color: #ffffff;
+            font-weight: 700;
+            border: 2px solid var(--sport-gold); /* Borda dourada no dia atual */
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.4);
+        }
+
+        /* Responsividade */
+        @media (max-width: 400px) {
+            .user-name {
+                font-size: 2rem;
+            }
+            .calendar-container {
+                border-radius: 20px;
+            }
+            .calendar-header {
+                padding: 24px 20px 15px 20px;
+            }
+            .calendar-body {
+                padding: 0 20px 20px 20px;
+            }
+            .days {
+                gap: 5px;
+            }
+            .sport-logo {
+                width: 28px;
+                height: 28px;
+            }
+            .current-date {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Saudação Adicionada -->
+    <div class="user-greeting">
+        <span class="user-name">Fabiana</span>
+    </div>
+
+    <div class="calendar-container">
+        <!-- Header com Logo e Mês -->
+        <header class="calendar-header">
+            <div class="brand-wrapper">
+                <img src="icons/sport.png" alt="Sport Club do Recife" class="sport-logo">
+                <h2 class="current-date"></h2>
+            </div>
+            <div class="calendar-navigation">
+                <button id="prev" class="nav-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button id="next" class="nav-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Calendário -->
+        <div class="calendar-body">
+            <ul class="weeks">
+                <li>Dom</li>
+                <li>Seg</li>
+                <li>Ter</li>
+                <li>Qua</li>
+                <li>Qui</li>
+                <li>Sex</li>
+                <li>Sáb</li>
+            </ul>
+            <ul class="days"></ul>
+        </div>
+    </div>
+
+    <script>
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('✅ ServiceWorker registrado com sucesso:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Falha no registro do ServiceWorker:', error);
+                    });
+            });
+        }
     
-  <div id="splash">
-    <div class="splash-content">
-      <img src="icons/logo.png" alt="Logo" class="splash-logo">
-      <h1 class="splash-title">Fideliza</h1>
-    </div>
-  </div>
-    
-  <div class="container">
-<img src="icons/icon-512.png" alt="Logo" class="logo-cliente" />
-    <h2>Consulte seu Cartão</h2>
-    <input type="text" id="buscarNome" placeholder="Digite seu nome de usuário">
-    <button class="buscarNome" onclick="buscarCliente()">Ver meus selos</button>
 
-    <div id="cartaoFidelidade" style="display:none;">
-      <h3 id="nomeCliente"></h3>
-      <div class="selos" id="areaSelos"></div>
-      <p id="infoIndicacao" style="margin-top: 10px;"></p>
-      <hr>
-    </div>
+        const currentDate = document.querySelector(".current-date");
+        const daysTag = document.querySelector(".days");
+        const prevNextIcon = document.querySelectorAll(".calendar-navigation button");
 
-    <!-- Botão ADM -->
-<button onclick="abrirModalADM()" class="botao-adm">ADM</button>
+        let date = new Date();
+        let currYear = date.getFullYear();
+        let currMonth = date.getMonth();
 
-<!-- Modal para senha do ADM -->
-<div id="modalADM" class="modal">
-  <div class="modal-conteudo">
-    <!-- Botão X para fechar -->
-    <span class="fechar-modal" onclick="fecharModalADM()">✖</span>
+        const months = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
 
-    <!-- Logo -->
-    <img src="icons/icon-512.png" alt="Logo" class="logo-modal" />
-    
-    <h2>Acesso Administrativo</h2>
-    <input type="password" id="senhaADM" placeholder="Digite a senha">
-    <div class="botoes">
-<button onclick="verificarSenhaADM()">Entrar</button>
-    </div>
-    <p id="erroSenha" class="mensagem-erro"><span>⚠️</span> Você não está autorizado pra isso!.</p>
-  </div>
-</div>
+        const renderCalendar = () => {
+            let firstDayofMonth = new Date(currYear, currMonth, 1).getDay();
+            let lastDateofMonth = new Date(currYear, currMonth + 1, 0).getDate();
+            let lastDayofMonth = new Date(currYear, currMonth, lastDateofMonth).getDay();
+            let lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate();
+            let liTag = "";
 
-    <button id="btnInstalar" style="display: none;">Instalar App</button>
-  </div>
+            for (let i = firstDayofMonth; i > 0; i--) {
+                liTag += `<li class="inactive"><span>${lastDateofLastMonth - i + 1}</span></li>`;
+            }
 
-  <!-- Modal por indicação -->
-  <div class="modal-indicacao" id="modalIndicacao">
-    <div class="modal-conteudo">
-      <span class="fechar" id="fecharModal">&times;</span>
-      <h2>Parabéns!</h2>
-      <p id="mensagemIndicacao">Você indicou 2 pessoas e ganhou <strong>1 mês grátis!</strong></p>
-      <a href="https://wa.me/5581982258462?text=Olá!%20Quero%20resgatar%20meu%20%20Premium%20grátis%20ao%20indicar%202%20pessoas%20%20%20." 
-         target="_blank" 
-         class="btn-whatsapp">
-        Resgatar via WhatsApp
-      </a>
-    </div>
-  </div>
-  
-  <!-- Modal para 3 selos -->
-  <div class="modal-indicacao" id="modal3Selos">
-    <div class="modal-conteudo">
-      <span class="fechar" onclick="fecharModal('modal3Selos')">&times;</span>
-      <h2>Parabéns!</h2>
-      <p>Você renovou por 3 meses e ganhou <strong>1 mês grátis!</strong></p>
-      <a href="https://wa.me/5581982258462?text=Olá!%20Quero%20resgatar%20meu%20%20Premium%20grátis%20que%20ganhei%20ao%20renovar%20por%203%20meses." 
-         target="_blank" 
-         class="btn-whatsapp">
-        Resgatar via WhatsApp
-      </a>
-    </div>
-  </div>
+            for (let i = 1; i <= lastDateofMonth; i++) {
+                let isToday = i === date.getDate() && currMonth === new Date().getMonth() 
+                             && currYear === new Date().getFullYear() ? "active" : "";
+                liTag += `<li class="${isToday}"><span>${i}</span></li>`;
+            }
 
-  <!-- Modal para 6 selos -->
-  <div class="modal-indicacao" id="modal6Selos">
-    <div class="modal-conteudo">
-      <span class="fechar" onclick="fecharModal('modal6Selos')">&times;</span>
-      <h2>Parabéns!</h2>
-      <p>Você renovou por 6 meses e ganhou <strong>2 meses grátis!</strong></p>
-      <a href="https://wa.me/5581982258462?text=Olá!%20Quero%20resgatar%20meu%20%20Premium%20grátis%20que%20ganhei%20ao%20renovar%20por%206%20meses." 
-         target="_blank" 
-         class="btn-whatsapp">
-        Resgatar via WhatsApp
-      </a>
-    </div>
-  </div>
+            for (let i = lastDayofMonth; i < 6; i++) {
+                liTag += `<li class="inactive"><span>${i - lastDayofMonth + 1}</span></li>`;
+            }
 
-  <!-- Modal para 10 selos -->
-  <div class="modal-indicacao" id="modal10Selos">
-    <div class="modal-conteudo">
-      <span class="fechar" onclick="fecharModal('modal10Selos')">&times;</span>
-      <h2>Parabéns!</h2>
-      <p>Você completou todos os selos e ganhou <strong>3 meses grátis!</strong></p>
-      <a href="https://wa.me/5581982258462?text=Olá!%20Quero%20resgatar%20meu%20%20Premium%20grátis%20que%20ganhei%20ao%20Completar%20todos%20os%20selos." 
-         target="_blank" 
-         class="btn-whatsapp">
-        Resgatar via WhatsApp
-      </a>
-    </div>
-  </div>
- 
+            currentDate.innerText = `${months[currMonth]} ${currYear}`;
+            daysTag.innerHTML = liTag;
+        }
+
+        renderCalendar();
+
+        prevNextIcon.forEach(icon => {
+            icon.addEventListener("click", () => {
+                currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1;
+
+                if(currMonth < 0 || currMonth > 11) {
+                    date = new Date(currYear, currMonth, new Date().getDate());
+                    currYear = date.getFullYear();
+                    currMonth = date.getMonth();
+                } else {
+                    date = new Date();
+                }
+                renderCalendar();
+            });
+        });
+    </script>
 </body>
 </html>
