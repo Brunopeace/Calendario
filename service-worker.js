@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calendario-sport-v2';
+const CACHE_NAME = 'calendario-sport-v3';
 // Lista de arquivos que queremos cachear para funcionar offline
 const STATIC_FILES = [
   'index.html',
